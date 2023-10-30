@@ -94,6 +94,10 @@ function MkEncrypt($password, $pageid = 'default') {
     }
 
     if(!empty($postpwd)){
+		if(!preg_match('/^[A-Za-z0-9!@_]+$/', $postpwd)) {
+			echo "<script>alert('密码格式错误');</script>";
+			return false;
+		}
         if(hash('sha256', $postpwd . MK_ENCRYPT_SALT) == $md5pw) {
 			setcookie('mk_encrypt_' . $pageid, $md5pw, time() + 3600000, '/');
         	$_SESSION['failed_attempts'] = 0;
@@ -200,7 +204,7 @@ if (MkEncrypt('Syf521')) {
                     <div class="card-body px-md-5">
                         <form id="shortenlink" action="" method="post" class="mk-side-form" action="">
                             <div class="input-group input-group-block mt-4 mb-3">
-                                <input type="password" id="pagepwd" name="pagepwd" placeholder="请输入密码" required class="form-control text-uppercase">
+								<input type="password" id="pagepwd" name="pagepwd" placeholder="请输入密码" required pattern="[A-Za-z0-9!@_]+" class="form-control text-uppercase">
                                 <button type="submit" class="btn btn-primary text-uppercase py-2 px-4 mt-2 mt-md-0">提交</button>
                             </div>
                         </form>
