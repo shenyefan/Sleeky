@@ -74,31 +74,43 @@
 
 <?php
 if (!defined('MK_ENCRYPT_SALT')) {
-    define('MK_ENCRYPT_SALT', 'EncryptSyf521Shorter!');
+    define('MK_ENCRYPT_SALT', 'EncryptSyf521Shorter!55Sz5Lia5Yeh5aW95Zac5qyi5L2g5ZWK');
 }
 
 function MkEncrypt($password, $pageid = 'default') {
+    session_start();
     $pageid     = md5($pageid);
-    $md5pw      = md5(md5($password) . MK_ENCRYPT_SALT);
-    $postpwd    = isset($_POST['pagepwd']) ? addslashes(trim($_POST['pagepwd'])) : '';
-    $cookiepwd  = isset($_COOKIE['mk_encrypt_'.$pageid]) ? addslashes(trim($_COOKIE['mk_encrypt_'.$pageid])) : '';
+    $md5pw      = hash('sha256', $password . MK_ENCRYPT_SALT);
+    $postpwd    = isset($_POST['pagepwd']) ? htmlspecialchars(addslashes(trim($_POST['pagepwd']))) : '';
+    $cookiepwd  = isset($_COOKIE['mk_encrypt_'.$pageid]) ? htmlspecialchars(addslashes(trim($_COOKIE['mk_encrypt_'.$pageid]))) : '';
 
     if($cookiepwd == $md5pw) {
-        // Cookie密码验证正确，用户已登录
         return true;
     }
 
-    if($postpwd == $password) {
-        // 提交的密码正确，设置Cookie
-        setcookie('mk_encrypt_' . $pageid, $md5pw, time() + 3600000, '/'); //cookie过期时间
-        return true;
+    if (isset($_SESSION['last_time']) && (time() - $_SESSION['last_time']) < 300) {
+        echo "<script>alert('失败次数过多，请稍后再试。');</script>";
+        return false;
     }
 
-    return false;
+    if(!empty($postpwd)){
+        if(hash('sha256', $postpwd . MK_ENCRYPT_SALT) == $md5pw) {
+			setcookie('mk_encrypt_' . $pageid, $md5pw, time() + 3600000, '/');
+        	$_SESSION['failed_attempts'] = 0;
+        	return true;
+    	} else {
+            $_SESSION['failed_attempts'] = isset($_SESSION['failed_attempts']) ? $_SESSION['failed_attempts'] + 1 : 1;
+            if ($_SESSION['failed_attempts'] >= 5) {
+                $_SESSION['last_time'] = time();
+            }
+            echo "<script>alert('密码错误');</script>";
+            return false;
+        }
+    }
 }
 
 // 调用MkEncrypt函数进行密码验证
-if (MkEncrypt('040617')) {
+if (MkEncrypt('Syf521')) {
     // 密码验证成功，显示受密码保护的内容
     ?>
 	<div class="container-fluid h-100">
