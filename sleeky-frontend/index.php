@@ -74,7 +74,7 @@
 
 <?php
 if (!defined('MK_ENCRYPT_SALT')) {
-    define('MK_ENCRYPT_SALT', 'EncryptSyf521Shorter!55Sz5Lia5Yeh5aW95Zac5qyi5L2g5ZWK');
+    define('MK_ENCRYPT_SALT', 'XXX');
 }
 
 function MkEncrypt($password, $pageid = 'default') {
@@ -114,7 +114,7 @@ function MkEncrypt($password, $pageid = 'default') {
 }
 
 // 调用MkEncrypt函数进行密码验证
-if (MkEncrypt('Syf521')) {
+if (MkEncrypt('XXX')) {
     // 密码验证成功，显示受密码保护的内容
     ?>
 	<div class="container-fluid h-100">
